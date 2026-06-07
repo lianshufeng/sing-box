@@ -1,4 +1,4 @@
-testing:
+stable:
   push:
     - name: docker-build-and-push-amd64
       services:
