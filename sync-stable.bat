@@ -3,19 +3,26 @@ setlocal
 
 cd /d "%~dp0"
 
-echo [1/4] Switch to stable branch...
+echo [1/5] Switch to stable branch...
 git switch stable
 if errorlevel 1 goto error
 
-echo [2/4] Fetch upstream stable...
+echo [2/5] Fetch upstream stable...
 git fetch upstream stable
 if errorlevel 1 goto error
 
-echo [3/4] Merge upstream/stable...
+echo [3/5] Merge upstream/stable...
 git merge upstream/stable
 if errorlevel 1 goto conflict
 
-echo [4/4] Push to origin stable...
+echo [4/5] Update workflow trigger file...
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-ddTHH:mm:ss.fffK"') do set SYNC_TIME=%%i
+echo last_sync=%SYNC_TIME%> .sync-stable-trigger
+git add .sync-stable-trigger
+git commit -m "Trigger stable sync workflow"
+if errorlevel 1 goto error
+
+echo [5/5] Push to origin stable...
 git push origin stable
 if errorlevel 1 goto error
 
